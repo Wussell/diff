@@ -44,3 +44,48 @@ func TestBreakup(t *testing.T) {
 		})
 	}
 }
+
+func TestShortestEdit(t *testing.T) {
+	examples := []struct {
+		name string
+		a    string
+		b    string
+		want int
+	}{
+		{
+			name: "no change",
+			a:    "hello",
+			b:    "hello",
+			want: 0,
+		},
+		/*
+			{
+				name: "one letter",
+				a:    "hope",
+				b:    "pope",
+				want: 1,
+			},
+			{
+				name: "one line",
+				a:    "Whitecaps on the bay:\nA broken signboard banging\nIn the April wind.",
+				b:    "Whitecaps in the sea:\nA broken signboard banging\nIn the April wind.",
+				want: 1,
+			},
+			{
+				name: "cooglan example",
+				a:    "ABCABBA",
+				b:    "CBABAC",
+				want: 5,
+			},
+		*/
+	}
+	for _, ex := range examples {
+		t.Run(ex.name, func(t *testing.T) {
+			got := shortestEdit(ex.a, ex.b)
+			if got != ex.want {
+				t.Fatalf("got %v, want %v\n", got, ex.want)
+			}
+		})
+	}
+
+}

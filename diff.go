@@ -33,13 +33,28 @@ func shortestEdit(a string, b string) int {
 
 	n, m := len(a), len(b)
 	max := n + m
-
-	v := make([]int, 2*max+1)
-	v[0] = 0
+	fmt.Printf("maximum number of moves for \n%s\nto \n%s\nis %v\n", a, b, max)
+	v := make([]int, 2*max+1) //long enough to hold values of x for any k
+	v[1] = 0
 
 	var fewestEdits int
 	for d := 0; d < max; d++ {
-		for k := -d; k < d; k += 2 {
+		fmt.Printf("D = %v\n", d)
+		for k := 0; k < (d*2)+1; k += 2 { //changed k range to account for differences in array indexing
+			fmt.Printf("  K = %v\n", k)
+
+			/*
+				var ki int //indexing integer to mimic Ruby's negative array indexing
+				if k <= 0 {
+					fmt.Printf("v's length is %v\n", len(v))
+					fmt.Printf("k is %v\n", k)
+					ki = len(v) + k
+					fmt.Printf("ki is %v\n", ki)
+				} else {
+					ki = k
+				}
+			*/
+
 			var x int
 			if k == -d || (k != d && v[k-1] < v[k+1]) {
 				x = v[k+1]
@@ -48,7 +63,7 @@ func shortestEdit(a string, b string) int {
 			}
 			y := x - k
 
-			for x < n && y < m && aLines[x].text == bLines[y].text {
+			for x < n && y < m && aLines[x].text == bLines[y].text { // diagonal move; represents deleting and inserting the same line
 				x, y = x+1, y+1
 			}
 			v[k] = x
