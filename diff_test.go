@@ -52,32 +52,45 @@ func TestShortestEdit(t *testing.T) {
 		b    string
 		want int
 	}{
+
 		{
-			name: "no change",
+			name: "same",
 			a:    "hello",
 			b:    "hello",
 			want: 0,
 		},
-		/*
-			{
-				name: "one letter",
-				a:    "hope",
-				b:    "pope",
-				want: 1,
-			},
-			{
-				name: "one line",
-				a:    "Whitecaps on the bay:\nA broken signboard banging\nIn the April wind.",
-				b:    "Whitecaps in the sea:\nA broken signboard banging\nIn the April wind.",
-				want: 1,
-			},
-			{
-				name: "cooglan example",
-				a:    "ABCABBA",
-				b:    "CBABAC",
-				want: 5,
-			},
-		*/
+		{
+			name: "oneMove",
+			a:    "as",
+			b:    "a",
+			want: 1,
+		},
+		{
+			name: "oneLetter",
+			a:    "as",
+			b:    "is",
+			want: 2,
+		},
+
+		{
+			name: "oneLine",
+			a:    "Whitecaps on the bay:\nA broken signboard banging\nIn the April wind.",
+			b:    "Whitecaps in the sea:\nA broken signboard banging\nIn the April wind.",
+			want: 2,
+		},
+		{
+			name: "twoLetters",
+			a:    "cake",
+			b:    "save",
+			want: 4,
+		},
+
+		{
+			name: "Cooglan",
+			a:    "ABCABBA",
+			b:    "CBABAC",
+			want: 5,
+		},
 	}
 	for _, ex := range examples {
 		t.Run(ex.name, func(t *testing.T) {
