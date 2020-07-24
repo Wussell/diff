@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"strings"
+
+	_ "github.com/fatih/color"
 )
 
 type line struct {
@@ -15,12 +17,12 @@ func breakup(s string) []line {
 	if strings.Contains(s, "\n") {
 		unnumbered := strings.Split(s, "\n")
 		for i, v := range unnumbered {
-			lin := line{i, v}
+			lin := line{i + 1, v}
 			lines = append(lines, lin)
 		}
 	} else {
 		for i, c := range s {
-			lin := line{i, string(c)}
+			lin := line{i + 1, string(c)}
 			lines = append(lines, lin)
 		}
 	}
@@ -116,11 +118,11 @@ func diff(aLines []line, bLines []line) []edit {
 	diff := make([]edit, 0)
 	var aLine, bLine line
 	for _, move := range backtrack(aLines, bLines) {
-		if move.px != 0 {
-			aLine = aLines[move.px-1]
+		if move.px != len(aLines) {
+			aLine = aLines[move.px]
 		}
-		if move.py != 0 {
-			bLine = bLines[move.py-1]
+		if move.py != len(bLines) {
+			bLine = bLines[move.py]
 		}
 
 		if move.x == move.px {
