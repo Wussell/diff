@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -36,7 +37,7 @@ func mapIndex(k int, length int) int {
 	return ki
 }
 
-func shortestEdit(a string, b string) int {
+func shortestEdit(a string, b string) ([][]int, int) {
 	aLines := breakup(a)
 	bLines := breakup(b)
 
@@ -45,9 +46,14 @@ func shortestEdit(a string, b string) int {
 	//fmt.Printf("maximum number of moves for \n%s\nto \n%s\nis %v.\n", a, b, max)
 	v := make([]int, 2*max+1) //long enough to hold values of x for any k
 	v[1] = 0
+	trace := make([][]int, 0)
 
 	var fewestEdits int
 	for d := 0; d <= max; d++ {
+		vcopy := append([]int{}, v...)
+		//if d > 0 {
+		trace = append(trace, vcopy)
+		//}
 		// fmt.Printf("D = %v\n", d)
 		for k := -d; k <= d; k += 2 { //changed k range to account for differences in array indexing
 			//	fmt.Printf("  K = %v\n", k)
@@ -70,23 +76,42 @@ func shortestEdit(a string, b string) int {
 			//	fmt.Printf("d: %v | %v\n", d, v)
 			if x >= n && y >= m {
 				fewestEdits = d
-				return fewestEdits
+				return trace, fewestEdits
 			}
 		}
 	}
-	return fewestEdits
+	return trace, fewestEdits
 }
 
+/*
+func backtrack(a string, b string) {
+	aLines := breakup(a)
+	bLines := breakup(b)
+
+	x, y := len(aLines), len(bLines)
+
+	k := x - y
+	var prev_k int
+	if k == -d || (k != d && v[mapIndex(k-1, len(v))] < v[mapIndex(k+1, len(v))]) {
+		prev_k = k + 1
+	} else {
+		prev_k = k - 1
+	}
+
+}
+*/
 func main() {
-	/*
-		a := "ABCABBA"
-		b := "CBABAC"
-		fmt.Printf("string a: %s \nstring b: %s \n", a, b)
-		aLines := breakup(a)
-		bLines := breakup(b)
-		fmt.Printf("lines of a: %v \nlines of b: %v \n", aLines, bLines)
-		if strings.Compare(a, b) == 1 {
-			fmt.Printf("strings a and b match\n")
-		}
-	*/
+
+	a := "ABCABBA"
+	b := "CBABAC"
+	fmt.Printf("string a: %s \nstring b: %s \n", a, b)
+	trace, depth := shortestEdit(a, b)
+	if depth != len(trace) {
+		fmt.Printf("trace has %v length, but the depth is %v\n", len(trace), depth)
+		//for _, e := range trace {
+		//	fmt.Printf("%v\n", e)
+		//}
+	} else {
+		fmt.Printf("All good!\n")
+	}
 }
