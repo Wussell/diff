@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	_ "github.com/fatih/color"
+	"github.com/fatih/color"
 )
 
 type line struct {
@@ -144,9 +144,11 @@ func print(diff []edit) {
 	for i := len(diff) - 1; i >= 0; i-- {
 		e := diff[i]
 		if e.kind == 1 {
-			fmt.Printf("+	 	%v	%s\n", e.newLine.number, e.newLine.text)
+			color.Green("+	 	%v	%s\n", e.newLine.number, e.newLine.text)
+			//fmt.Printf("+	 	%v	%s\n", e.newLine.number, e.newLine.text)
 		} else if e.kind == -1 {
-			fmt.Printf("-	%v	 	%s\n", e.oldLine.number, e.oldLine.text)
+			color.Red("-	%v	 	%s\n", e.oldLine.number, e.oldLine.text)
+			//fmt.Printf("-	%v	 	%s\n", e.oldLine.number, e.oldLine.text)
 		} else {
 			fmt.Printf(" 	%v	%v	%s\n", e.oldLine.number, e.newLine.number, e.oldLine.text)
 		}
