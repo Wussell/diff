@@ -72,8 +72,13 @@ func shortestEdit(aLines []line, bLines []line) ([][]int, int) {
 	return trace, fewestEdits
 }
 
-func backtrack(aLines []line, bLines []line) {
+type move struct {
+	px, py, x, y int
+}
+
+func backtrack(aLines []line, bLines []line) []move {
 	x, y := len(aLines), len(bLines)
+	moves := []move{}
 	for trace, d := shortestEdit(aLines, bLines); d >= 0; d-- {
 		v := trace[d]
 		k := x - y
@@ -88,13 +93,61 @@ func backtrack(aLines []line, bLines []line) {
 
 		for x > px && y > py {
 			fmt.Printf("(%v, %v) -> (%v, %v) \n", x-1, y-1, x, y)
+			moves = append(moves, move{x - 1, y - 1, x, y})
 			x, y = x-1, y-1
 		}
 
 		if d > 0 {
 			fmt.Printf("(%v, %v) -> (%v, %v) \n", px, py, x, y)
+			moves = append(moves, move{px, py, x, y})
 		}
 		x, y = px, py
+	}
+	return moves
+}
+
+type edit struct {
+	kind    int
+	oldLine line
+	newLine line
+}
+
+func diff(aLines []line, bLines []line) []edit {
+	diff := make([]edit, 0)
+	var aLine, bLine line
+	for _, move := range backtrack(aLines, bLines) {
+		if move.px != 0 {
+			aLine = aLines[move.px-1]
+		}
+		if move.py != 0 {
+			bLine = bLines[move.py-1]
+		}
+
+		if move.x == move.px {
+			new := edit{kind: 1, newLine: bLine}
+			diff = append(diff, new)
+		} else if move.y == move.py {
+			new := edit{kind: -1, oldLine: aLine}
+			diff = append(diff, new)
+		} else {
+			new := edit{kind: 0, oldLine: aLine, newLine: bLine}
+			diff = append(diff, new)
+		}
+	}
+
+	return diff //in reverse order
+}
+
+func print(diff []edit) {
+	for i := len(diff) - 1; i >= 0; i-- {
+		e := diff[i]
+		if e.kind == 1 {
+			fmt.Printf("+	 	%v	%s\n", e.newLine.number, e.newLine.text)
+		} else if e.kind == -1 {
+			fmt.Printf("-	%v	 	%s\n", e.oldLine.number, e.oldLine.text)
+		} else {
+			fmt.Printf(" 	%v	%v	%s\n", e.oldLine.number, e.newLine.number, e.oldLine.text)
+		}
 	}
 }
 
@@ -110,6 +163,10 @@ func main() {
 			fmt.Printf("%v | %v\n", d, v)
 		}
 	*/
-
-	backtrack(aLines, bLines)
+	//fmt.Printf("%v\n", backtrack(aLines, bLines))
+	diff := diff(aLines, bLines)
+	for i, e := range diff {
+		fmt.Printf("%v: %v\n", i, e)
+	}
+	print(diff)
 }

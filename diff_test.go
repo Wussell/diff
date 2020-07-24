@@ -94,7 +94,7 @@ func TestShortestEdit(t *testing.T) {
 	}
 	for _, ex := range examples {
 		t.Run(ex.name, func(t *testing.T) {
-			got := shortestEdit(ex.a, ex.b)
+			_, got := shortestEdit(ex.a, ex.b)
 			if got != ex.want {
 				t.Fatalf("got %v, want %v\n", got, ex.want)
 			}
