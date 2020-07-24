@@ -37,13 +37,9 @@ func mapIndex(k int, length int) int {
 	return ki
 }
 
-func shortestEdit(a string, b string) ([][]int, int) {
-	aLines := breakup(a)
-	bLines := breakup(b)
-
+func shortestEdit(aLines []line, bLines []line) ([][]int, int) {
 	n, m := len(aLines), len(bLines)
 	max := n + m
-	//fmt.Printf("maximum number of moves for \n%s\nto \n%s\nis %v.\n", a, b, max)
 	v := make([]int, 2*max+1) //long enough to hold values of x for any k
 	v[1] = 0
 	trace := make([][]int, 0)
@@ -51,13 +47,8 @@ func shortestEdit(a string, b string) ([][]int, int) {
 	var fewestEdits int
 	for d := 0; d <= max; d++ {
 		vcopy := append([]int{}, v...)
-		//if d > 0 {
 		trace = append(trace, vcopy)
-		//}
-		// fmt.Printf("D = %v\n", d)
 		for k := -d; k <= d; k += 2 { //changed k range to account for differences in array indexing
-			//	fmt.Printf("  K = %v\n", k)
-
 			var x int
 			if k == -d || (k != d && v[mapIndex(k-1, len(v))] < v[mapIndex(k+1, len(v))]) { //move downward
 				ki := mapIndex(k+1, len(v))
@@ -67,13 +58,11 @@ func shortestEdit(a string, b string) ([][]int, int) {
 				x = v[ki] + 1
 			}
 			y := x - k
-			//	fmt.Printf("(%v, %v)\n", x, y)
 			for x < n && y < m && aLines[x].text == bLines[y].text { // diagonal move; represents deleting and inserting the same line
 				x, y = x+1, y+1
 			}
 			ki := mapIndex(k, len(v))
 			v[ki] = x
-			//	fmt.Printf("d: %v | %v\n", d, v)
 			if x >= n && y >= m {
 				fewestEdits = d
 				return trace, fewestEdits
@@ -83,35 +72,44 @@ func shortestEdit(a string, b string) ([][]int, int) {
 	return trace, fewestEdits
 }
 
-/*
-func backtrack(a string, b string) {
-	aLines := breakup(a)
-	bLines := breakup(b)
-
+func backtrack(aLines []line, bLines []line) {
 	x, y := len(aLines), len(bLines)
+	for trace, d := shortestEdit(aLines, bLines); d >= 0; d-- {
+		v := trace[d]
+		k := x - y
+		var pk int
+		if k == -d || (k != d && v[mapIndex(k-1, len(v))] < v[mapIndex(k+1, len(v))]) {
+			pk = k + 1
+		} else {
+			pk = k - 1
+		}
+		px := v[pk]
+		py := px - pk
 
-	k := x - y
-	var prev_k int
-	if k == -d || (k != d && v[mapIndex(k-1, len(v))] < v[mapIndex(k+1, len(v))]) {
-		prev_k = k + 1
-	} else {
-		prev_k = k - 1
+		for x > px && y > py {
+			fmt.Printf("(%v, %v) -> (%v, %v) \n", x-1, y-1, x, y)
+			x, y = x-1, y-1
+		}
+
+		if d > 0 {
+			fmt.Printf("(%v, %v) -> (%v, %v) \n", px, py, x, y)
+		}
+		x, y = px, py
 	}
-
 }
-*/
+
 func main() {
 
 	a := "ABCABBA"
 	b := "CBABAC"
+	aLines, bLines := breakup(a), breakup(b)
 	fmt.Printf("string a: %s \nstring b: %s \n", a, b)
-	trace, depth := shortestEdit(a, b)
-	if depth != len(trace) {
-		fmt.Printf("trace has %v length, but the depth is %v\n", len(trace), depth)
-		//for _, e := range trace {
-		//	fmt.Printf("%v\n", e)
-		//}
-	} else {
-		fmt.Printf("All good!\n")
-	}
+	/*
+		trace, _ := shortestEdit(a, b)
+		for d, v := range trace {
+			fmt.Printf("%v | %v\n", d, v)
+		}
+	*/
+
+	backtrack(aLines, bLines)
 }
